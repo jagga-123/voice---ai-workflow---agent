@@ -1,0 +1,14 @@
+{
+  "name": "ar-voice-agent-bolna",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Accounts receivable voice follow-up demo with a Bolna-ready agent and a lightweight web app.",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AR Voice Agent | Bolna Demo</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="bg-orb bg-orb--one" aria-hidden="true"></div>
+    <div class="bg-orb bg-orb--two" aria-hidden="true"></div>
+    <div class="bg-grid" aria-hidden="true"></div>
+
+    <div class="shell">
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand__mark">AR</div>
+          <div>
+            <p class="eyebrow">Voice workflow studio</p>
+            <h1>AR Voice Follow-up Assistant</h1>
+          </div>
+        </div>
+
+        <div class="topbar__status">
+          <span class="status-chip status-chip--live" id="bolnaMode">Bolna integration: Demo mode</span>
+          <span class="status-chip status-chip--ghost" id="lastRefresh">Waiting for data</span>
+        </div>
+      </header>
+
+      <section class="hero">
+        <div class="hero__copy">
+          <div class="hero-kicker">
+            <span class="hero-kicker__dot"></span>
+            Enterprise collections command center
+          </div>
+          <p class="lede">
+            A polished voice collections demo for overdue invoices. Trigger a call, watch the payload,
+            and see the invoice status update in real time.
+          </p>
+
+          <div class="hero-chips" aria-label="Highlights">
+            <span class="hero-chip">Promise-to-pay capture</span>
+            <span class="hero-chip">Webhook backed workflow</span>
+            <span class="hero-chip">Fast cash collection</span>
+          </div>
+
+          <div class="hero-lane" aria-label="Execution summary">
+            <div class="hero-lane__item">
+              <span>Current queue</span>
+              <strong id="queueLabel">3 overdue invoices</strong>
+            </div>
+            <div class="hero-lane__item">
+              <span>Call mode</span>
+              <strong id="modeLabel">Demo</strong>
+            </div>
+            <div class="hero-lane__item">
+              <span>Next action</span>
+              <strong id="nextActionLabel">Promise-to-pay follow-up</strong>
+            </div>
+          </div>
+
+          <div class="hero-copy__actions">
+            <button id="heroCallBtn" type="button" class="button">Start Voice Call</button>
+            <button id="refreshBtn" type="button" class="button button--ghost">Refresh data</button>
+          </div>
+        </div>
+
+        <div class="hero-card">
+          <div class="voice-pill">
+            <span class="voice-pill__dot"></span>
+            Live voice channel
+          </div>
+          <div class="hero-card__label">Outcome Metric</div>
+          <div class="hero-card__value">Promise-to-pay rate</div>
+          <div class="hero-card__stat" id="metricStat">Loading dashboard metrics...</div>
+          <div class="hero-card__sub" id="bolnaModeCopy">
+            Demo mode is active. Use the form below to simulate a live call.
+          </div>
+
+          <div class="hero-card__mini-grid">
+            <div class="mini-stat">
+              <span class="mini-stat__label">Open invoices</span>
+              <strong id="openInvoicesCount">0</strong>
+            </div>
+            <div class="mini-stat">
+              <span class="mini-stat__label">Collected</span>
+              <strong id="collectedCount">0</strong>
+            </div>
+            <div class="mini-stat">
+              <span class="mini-stat__label">Follow-ups</span>
+              <strong id="followUpsCount">0</strong>
+            </div>
+          </div>
+
+          <div class="session-card">
+            <div class="session-card__header">
+              <span class="session-card__label">Live call playback</span>
+              <span class="session-card__status" id="sessionStatus">Idle</span>
+            </div>
+            <p id="sessionNote" class="session-card__note">
+              Select a scenario to preview the call path.
+            </p>
+            <ol class="session-steps" id="sessionSteps">
+              <li class="is-current">Prepare invoice context</li>
+              <li>Dial customer contact</li>
+              <li>Capture the outcome</li>
+              <li>Sync webhook to backend</li>
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      <section class="grid grid--four" id="metrics"></section>
+
+      <section class="panel">
+        <div class="panel__header">
+          <div>
+            <p class="eyebrow">Workflow</p>
+            <h2>User -> Web App -> Bolna -> Backend -> Output</h2>
+          </div>
+        </div>
+        <ol class="workflow" id="workflow"></ol>
+      </section>
+
+      <section class="content-grid">
+        <div class="panel panel--form">
+          <div class="panel__header">
+            <div>
+              <p class="eyebrow">Create call</p>
+              <h2>Trigger AI voice agent</h2>
+            </div>
+          </div>
+
+          <div class="preset-bar" id="presetBar" aria-label="Quick outcomes">
+            <button type="button" class="preset-btn is-active" data-preset="promise_to_pay">
+              Promise to pay
+            </button>
+            <button type="button" class="preset-btn" data-preset="paid">Paid today</button>
+            <button type="button" class="preset-btn" data-preset="callback_requested">
+              Callback requested
+            </button>
+            <button type="button" class="preset-btn" data-preset="wrong_contact">Wrong contact</button>
+          </div>
+
+          <div class="focus-card" aria-live="polite">
+            <div class="focus-card__header">
+              <span class="focus-card__label">Selected invoice</span>
+              <span class="focus-card__badge" id="focusStatus">Overdue</span>
+            </div>
+            <div class="focus-card__grid">
+              <div>
+                <span>Customer</span>
+                <strong id="focusCustomer">Northwind Trading</strong>
+              </div>
+              <div>
+                <span>Invoice</span>
+                <strong id="focusInvoice">INV-2041</strong>
+              </div>
+              <div>
+                <span>Amount</span>
+                <strong id="focusAmount">₹2,40,000</strong>
+              </div>
+              <div>
+                <span>Due date</span>
+                <strong id="focusDue">-</strong>
+              </div>
+            </div>
+          </div>
+
+          <form id="demoForm" class="form">
+            <label>
+              Customer name
+              <input name="customerName" value="Northwind Trading" />
+            </label>
+            <label>
+              Contact name
+              <input name="contactName" value="Ayesha Khan" />
+            </label>
+            <label>
+              Phone
+              <input name="phone" value="+91-99999-10001" />
+            </label>
+            <label>
+              Invoice number
+              <input name="invoiceNumber" value="INV-2041" />
+            </label>
+            <label>
+              Amount
+              <input name="amount" type="number" value="240000" />
+            </label>
+            <label>
+              Due date
+              <input name="dueDate" type="date" />
+            </label>
+            <label>
+              Demo outcome
+              <select name="outcome">
+                <option value="promise_to_pay">Promise to pay</option>
+                <option value="paid">Paid</option>
+                <option value="callback_requested">Callback requested</option>
+                <option value="wrong_contact">Wrong contact</option>
+                <option value="no_answer">No answer</option>
+                <option value="not_interested">Not interested</option>
+              </select>
+            </label>
+            <label>
+              Priority
+              <select name="priority">
+                <option value="High">High</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
+              </select>
+            </label>
+            <label class="full">
+              Notes
+              <textarea name="notes" rows="4">Customer agreed to pay after the next GRN reconciliation.</textarea>
+            </label>
+            <div class="form-actions full">
+              <button type="submit" class="button">Start AI Call</button>
+              <button type="button" id="saveInvoiceBtn" class="button button--ghost">
+                Save invoice only
+              </button>
+              <button type="button" id="randomDemoBtn" class="button button--ghost">
+                Random demo
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <div class="stack">
+          <section class="panel">
+            <div class="panel__header">
+              <div>
+                <p class="eyebrow">Bolna payload</p>
+                <h2>Structured prompt + webhook</h2>
+              </div>
+            </div>
+            <details open class="payload-details">
+              <summary>Generated AI Payload</summary>
+              <pre id="payload" class="codebox"></pre>
+            </details>
+          </section>
+
+          <section class="panel">
+            <div class="panel__header">
+              <div>
+                <p class="eyebrow">Webhook inbox</p>
+                <h2>Latest backend events</h2>
+              </div>
+            </div>
+            <div id="events" class="feed"></div>
+          </section>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel__header">
+          <div>
+            <p class="eyebrow">Invoices</p>
+            <h2>Operational dashboard</h2>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Customer</th>
+                <th>Invoice</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Promise date</th>
+                <th>Last outcome</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="invoiceTable"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <script src="/app.js"></script>
+  </body>
+</html>

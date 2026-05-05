@@ -1,0 +1,8 @@
+{
+  "name": "voice-ai-workflow-agent-root",
+  "private": true,
+  "scripts": {
+    "start": "node ar-voice-agent-bolna/server.js",
+    "dev": "node ar-voice-agent-bolna/server.js"
+  }
+}
